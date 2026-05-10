@@ -13,7 +13,7 @@ model = Sequential([
     Dense(1, activation='sigmoid')              # single neuron = logistic regression
 ])
 
-model.compile(optimizer=Adam(learning_rate=0.001),loss='binary_crossentropy',binarymetrics=['accuracy'])
+model.compile(optimizer=Adam(learning_rate=0.001),loss='binary_crossentropy',metrics=['accuracy'])
 
 # Note: MNIST has 10 classes so we convert to binary (0-4=0, 5-9=1)
 y_train_binary = (y_train >= 5).astype(int)
