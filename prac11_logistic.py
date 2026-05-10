@@ -20,7 +20,6 @@ y_train_binary = (y_train >= 5).astype(int)
 y_test_binary  = (y_test  >= 5).astype(int)
 
 model.fit(X_train, y_train_binary,batch_size=64,epochs=5,verbose=1)
-
 test_loss, test_accuracy = model.evaluate(X_test, y_test_binary)
 print("Test Loss:    ", round(test_loss, 4))
 print("Test Accuracy:", round(test_accuracy * 100, 2), "%")
