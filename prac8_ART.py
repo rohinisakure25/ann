@@ -6,8 +6,6 @@ inputs = np.array([
     [0, 0, 1, 0]
 ])
 vigilance = 0.6
-
-# List to store clusters
 clusters = []
 for pattern in inputs:
 
@@ -23,13 +21,11 @@ for pattern in inputs:
 
             matched = True
             break
-
-    # Create new cluster
     if not matched:
 
         clusters.append(pattern)
         print(f"Pattern {pattern} creates new Cluster {len(clusters)}")
-        
+
 print("\nFinal Clusters:")
 for i, cluster in enumerate(clusters):
     print(f"Cluster {i+1}: {cluster}")

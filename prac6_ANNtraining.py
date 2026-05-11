@@ -1,61 +1,86 @@
 import numpy as np
-X = np.array([[0, 0],[0, 1],[1, 0],[1, 1]])
-Y = np.array([[0],[1],[1],[0]])
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-# Derivative of sigmoid
-def sigmoid_derivative(x):
-    return x * (1 - x)
 
-# Random weight initialization
-np.random.seed(1)
+class NeuralNetwork:
 
-# Input layer -> Hidden layer weights
-weights_input_hidden = np.random.uniform(size=(2, 2))
+    def __init__(self, input_size, hidden_size, output_size):
+        self.W1 = np.random.randn(input_size, hidden_size)
+        self.b1 = np.zeros((1, hidden_size))
+        self.W2 = np.random.randn(hidden_size, output_size)
+        self.b2 = np.zeros((1, output_size))
 
-# Hidden layer -> Output layer weights
-weights_hidden_output = np.random.uniform(size=(2, 1))
-learning_rate = 0.5
-epochs = 50000
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
 
-for epoch in range(epochs):
-    # ----- Forward Propagation -----
-    # Hidden layer
-    hidden_input = np.dot(X, weights_input_hidden)
-    hidden_output = sigmoid(hidden_input)
-    # Output layer
-    final_input = np.dot(
-        hidden_output,
-        weights_hidden_output
-    )
+    def sigmoid_derivative(self, x):
+        return x * (1 - x)
 
-    predicted_output = sigmoid(final_input)
-    error = Y - predicted_output
-    # ----- Back Propagation -----
+    def forward_propagation(self, X):
+        self.z1 = np.dot(X, self.W1) + self.b1
+        self.a1 = self.sigmoid(self.z1)
 
-    d_output = error * sigmoid_derivative(
-        predicted_output
-    )
+        self.z2 = np.dot(self.a1, self.W2) + self.b2
+        self.y_hat = self.sigmoid(self.z2)
 
-    hidden_error = d_output.dot(
-        weights_hidden_output.T
-    )
+        return self.y_hat
 
-    d_hidden = hidden_error * sigmoid_derivative(
-        hidden_output
-    )
+    def backward_propagation(self, X, y, y_hat):
+        self.error = y - y_hat
 
-    # ----- Update Weights -----
+        self.delta2 = self.error * self.sigmoid_derivative(y_hat)
 
-    weights_hidden_output += hidden_output.T.dot(
-        d_output
-    ) * learning_rate
+        self.a1_error = self.delta2.dot(self.W2.T)
 
-    weights_input_hidden += X.T.dot(
-        d_hidden
-    ) * learning_rate
+        self.delta1 = self.a1_error * self.sigmoid_derivative(self.a1)
 
-print("Results after training:")
-for i in range(len(X)):
-    pred = round(float(predicted_output[i][0]), 2)
-    print("Input:", X[i], "Expected:", int(Y[i][0]), "Predicted:", pred)
+        self.W2 += self.a1.T.dot(self.delta2)
+
+        self.b2 += np.sum(self.delta2, axis=0, keepdims=True)
+
+        self.W1 += X.T.dot(self.delta1)
+
+        self.b1 += np.sum(self.delta1, axis=0)
+
+    def train(self, X, y, epochs, learning_rate):
+        for i in range(epochs):
+
+            y_hat = self.forward_propagation(X)
+
+            self.backward_propagation(X, y, y_hat)
+
+            if i % 100 == 0:
+                print("Error at epoch", i, ":", np.mean(np.abs(self.error)))
+
+
+# Define the input and output datasets
+
+X = np.array([[0, 0],
+              [0, 1],
+              [1, 0],
+              [1, 1]])
+
+y = np.array([[0],
+              [1],
+              [1],
+              [0]])
+
+
+# Create a neural network with 2 input neurons,
+# 4 neurons in the hidden layer,
+# and 1 output neuron
+
+nn = NeuralNetwork(2, 4, 1)
+
+
+# Train the neural network
+
+nn.train(X, y, epochs=10000, learning_rate=0.1)
+
+
+# Use the trained neural network to make predictions
+
+predictions = nn.forward_propagation(X)
+
+
+# Print the predictions
+
+print(predictions)

@@ -29,16 +29,10 @@ if __name__ == '__main__':
     ])
 
     n_neurons = patterns.shape[1]
-
     network = HopfieldNetwork(n_neurons)
-
     network.train(patterns)
-
     for pattern in patterns:
-
         prediction, energy = network.predict(pattern)
-
         print("Input pattern:", pattern)
         print("Predicted pattern:", prediction)
-        print("Energy:", energy)
         print()
